@@ -1,61 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>龙虾AI</title>
-<style>
-body{font-family:Arial;max-width:600px;margin:auto;padding:10px;}
-#box{height:420px;overflow:auto;border:1px solid #ddd;padding:10px;}
-.user{text-align:right;}
-.user span{background:#4f7cff;color:#fff;padding:6px 10px;border-radius:8px;}
-.ai span{background:#eee;padding:6px 10px;border-radius:8px;}
-input{width:75%;padding:10px;}
-button{padding:10px;}
-</style>
+  <meta charset="UTF-8">
+  <title>龙虾AI</title>
 </head>
-
 <body>
+  <h2>龙虾AI聊天</h2>
 
-<h3>🦞 龙虾AI（基础版）</h3>
+  <input id="msg" placeholder="输入..." />
+  <button onclick="send()">发送</button>
 
-<div id="box"></div>
+  <div id="chat"></div>
 
-<input id="input">
-<button onclick="send()">发送</button>
+  <script>
+    async function send() {
+      const msg = document.getElementById("msg").value;
 
-<script>
-let box=document.getElementById("box");
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: msg,
+          userId: "u1"
+        })
+      });
 
-function add(role,text){
-  let d=document.createElement("div");
-  d.className=role;
-  d.innerHTML="<span>"+text+"</span>";
-  box.appendChild(d);
-  box.scrollTop=box.scrollHeight;
-}
+      const data = await res.json();
 
-// 🧠临时AI（先跑起来用）
-function fakeAI(msg){
-  if(msg.includes("你好")) return "你好，我是龙虾AI 🦞";
-  if(msg.includes("你是谁")) return "我是你的AI助手";
-  if(msg.includes("累")) return "可以休息一下";
-  return "我收到了：" + msg;
-}
-
-function send(){
-  let input=document.getElementById("input");
-  let text=input.value;
-  if(!text.trim())return;
-
-  add("user",text);
-
-  setTimeout(()=>{
-    add("ai",fakeAI(text));
-  },300);
-
-  input.value="";
-}
-</script>
-
+      document.getElementById("chat").innerHTML +=
+        "<p>你：" + msg + "</p><p>AI：" + data.reply + "</p>";
+    }
+  </script>
 </body>
 </html>
